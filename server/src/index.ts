@@ -28,7 +28,7 @@ app.use(errorHandler);
 async function getDb() {
   try {
     await mongoose.connect(
-      "mongodb+srv://tristanvicclarito2003:Clarito_2003@keepme.5darxem.mongodb.net/keepMe"
+      "mongodb+srv://tristanvicclarito2003:Clarito_2003@keepme.5darxem.mongodb.net/?retryWrites=true&w=majority&appName=keepMe"
     );
   } catch (err) {
     console.log(err);
