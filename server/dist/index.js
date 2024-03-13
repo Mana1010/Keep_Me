@@ -29,7 +29,7 @@ app.use("/user", userRoute_1.default);
 app.use(errorHandler_1.default);
 async function getDb() {
     try {
-        await mongoose_1.default.connect("mongodb+srv://tristanvicclarito2003:Clarito_2003@keepme.5darxem.mongodb.net/keepMe");
+        await mongoose_1.default.connect( "mongodb+srv://tristanvicclarito2003:Clarito_2003@keepme.5darxem.mongodb.net/?retryWrites=true&w=majority&appName=keepMe");
     }
     catch (err) {
         console.log(err);
