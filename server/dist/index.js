@@ -29,13 +29,14 @@ app.use("/user", userRoute_1.default);
 app.use(errorHandler_1.default);
 async function getDb() {
     try {
-        await mongoose_1.default.connect(process.env.MONGO_URI);
-        app.listen(PORT, () => {
-            console.log("Server is listening!!!");
-        });
+        await mongoose_1.default.connect("mongodb+srv://tristanvicclarito2003:Clarito_2003@keepme.5darxem.mongodb.net/keepMe");
     }
-    catch {
-        process.exit(1);
+    catch (err) {
+        console.log(err);
     }
 }
 getDb();
+app.listen(PORT, () => {
+    console.log("Server is listening!!");
+});
+
