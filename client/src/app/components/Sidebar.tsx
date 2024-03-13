@@ -17,6 +17,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { NoteData } from "../notes/page";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
+import { BASE_URL } from "@/utils/baseUrl";
 
 function Sidebar() {
   const axiosIntercept = useAxiosIntercept();
@@ -49,15 +50,12 @@ function Sidebar() {
   } = useQuery({
     queryKey: ["notes"],
     queryFn: async () => {
-      const response = await axiosIntercept.get(
-        "http://localhost:5000/user/notes",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosIntercept.get(`${BASE_URL}/user/notes`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+        withCredentials: true,
+      });
       return response.data.message;
     },
     enabled: currentUser !== null,
@@ -65,15 +63,12 @@ function Sidebar() {
   const getTrash = useQuery({
     queryKey: ["trashes"],
     queryFn: async () => {
-      const response = await axiosIntercept.get(
-        "http://localhost:5000/user/trashes",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosIntercept.get(`${BASE_URL}/user/trashes`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+        withCredentials: true,
+      });
       return response.data.message;
     },
     enabled: currentUser !== null,
@@ -215,3 +210,4 @@ function Sidebar() {
 }
 
 export default Sidebar;
+
