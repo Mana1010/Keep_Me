@@ -7,13 +7,14 @@ import { utilStore } from "@/store/util.store";
 import { useRouter } from "next/navigation";
 import { MdOutlineSecurity, MdPhonelink } from "react-icons/md";
 import { GiToken } from "react-icons/gi";
+import { usePathname } from "next/navigation";
 export default function Home() {
-  const { setCurrentUser } = utilStore();
   const router = useRouter();
+  const pathname = usePathname();
   const { currentUser, setCurrentUser } = utilStore();
-    useEffect(() => {
+  useEffect(() => {
     setCurrentUser();
-  }, []);
+  }, [pathname]);
   return (
     <main className="w-full h-screen overflow-y-auto relative">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center h-full w-full px-4">
