@@ -10,7 +10,10 @@ import { GiToken } from "react-icons/gi";
 export default function Home() {
   const { setCurrentUser } = utilStore();
   const router = useRouter();
-  const { currentUser } = utilStore();
+  const { currentUser, setCurrentUser } = utilStore();
+    useEffect(() => {
+    setCurrentUser();
+  }, []);
   return (
     <main className="w-full h-screen overflow-y-auto relative">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center h-full w-full px-4">
