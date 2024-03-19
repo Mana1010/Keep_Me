@@ -39,7 +39,13 @@ function ChangePassword() {
     mutationFn: async (data: Data) => {
       const response = await axiosIntercept.patch(
         `${BASE_URL}/auth/changepassword`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+          withCredentials: true,
+        }
       );
       return response.data.message;
     },
