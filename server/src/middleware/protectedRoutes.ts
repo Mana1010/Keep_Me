@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { User } from "../model/userModel";
+import "dotenv/config";
 export const protectedRoutes = (
   req: Request,
   res: Response,
@@ -9,11 +10,13 @@ export const protectedRoutes = (
   const accessToken = req.headers["authorization"];
   if (accessToken) {
     const token = accessToken.split(" ")[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_KEY!, async (err, decode) => {
+
+    jwt.verify(token, process.env.ACCESS_TOKEN!, async (err, decode) => {
       if (err) {
         return res.status(403).json({ message: "Forbidden" });
       } else {
         const jwtPayload = decode as JwtPayload;
+        console.log(`Token ${jwtPayload}`);
         req.user = await User.findById(jwtPayload.id).select("-password");
         next();
       }

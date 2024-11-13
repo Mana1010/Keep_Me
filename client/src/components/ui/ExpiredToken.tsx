@@ -2,7 +2,7 @@
 import React from "react";
 import Router, { useRouter } from "next/navigation";
 import { utilStore } from "@/store/util.store";
-import forbiddenPic from "../../app/components/img/foribidden-pic.png";
+import forbiddenPic from "../../assets/images/foribidden-pic.png";
 import Image from "next/image";
 function Alert() {
   const router = useRouter();

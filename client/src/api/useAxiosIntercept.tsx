@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { refreshToken } from "./refreshToken";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
 import { utilStore } from "@/store/util.store";
 import { axiosInterceptor } from "./axiosCreate";
 interface DecodeJWT {
@@ -55,6 +54,8 @@ function useAxiosIntercept() {
       (response) => response,
       (error) => {
         const status = error?.response.status;
+        const message = error.response.data.message;
+
         if (status === 403) {
           setOpenAlert(true);
           return;
@@ -66,6 +67,7 @@ function useAxiosIntercept() {
       axiosInterceptor.interceptors.request.eject(requestIntercept);
       axiosInterceptor.interceptors.response.eject(responseIntercept);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return axiosInterceptor;
 }

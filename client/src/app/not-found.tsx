@@ -1,5 +1,5 @@
 import React from "react";
-import notFound from "./components/img/error-not-found.png";
+import notFound from "../assets/images/error-not-found.png";
 import Image from "next/image";
 function page() {
   return (

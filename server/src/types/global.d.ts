@@ -1,4 +1,4 @@
-import { Mongoose, Types } from "mongoose";
+import { Types } from "mongoose";
 interface User {
   email?: string;
   username?: string;
@@ -7,7 +7,7 @@ interface User {
 declare global {
   namespace Express {
     interface Request {
-      user: User | null;
+      user: User | null | any;
     }
   }
 }

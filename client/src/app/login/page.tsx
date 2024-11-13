@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import loginIcon from "../components/img/loginIcon.png";
+import loginIcon from "../../assets/images/loginIcon.png";
 import Image from "next/image";
 import Link from "next/link";
 import { MdScheduleSend, MdSend } from "react-icons/md";
 import { toast } from "sonner";
-import { useMediaQuery } from "usehooks-ts";
+import useMobileView from "@/hooks/useMobileView";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { utilStore } from "@/store/util.store";
@@ -22,7 +22,7 @@ function Login() {
   const search = useSearchParams();
   const { setCurrentUser } = utilStore();
   const router = useRouter();
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, reset } = useForm<Data>({
     defaultValues: {

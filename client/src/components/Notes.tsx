@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import keepMeIcon from "./img/keepMe-lightmode.png";
+import keepMeIcon from "../assets/images/keepMe-lightmode.png";
 import { LuPin, LuPinOff } from "react-icons/lu";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { GoHeart, GoHeartFill } from "react-icons/go";
@@ -11,7 +11,7 @@ import { LiaListAltSolid, LiaListUlSolid } from "react-icons/lia";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMediaQuery } from "usehooks-ts";
+import useMobileView from "@/hooks/useMobileView";
 import { noteStore } from "@/store/note.store";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
 import { BASE_URL } from "@/utils/baseUrl";
@@ -82,7 +82,7 @@ function AddNote({ setAddNote }: Data) {
     },
   ];
   const axiosIntercept = useAxiosIntercept();
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const queryClient = useQueryClient();
   const mutateNote = useMutation({
     mutationFn: async () => {
@@ -128,6 +128,7 @@ function AddNote({ setAddNote }: Data) {
       removeDuplicateSymbols(filterSymbols);
     }
     return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note.isListOpen]);
   return (
     <div

@@ -18,7 +18,6 @@ const trashSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: "Notes",
   },
-  owner: String,
   createdAt: {
     type: Date,
   },
@@ -37,4 +36,7 @@ const trashSchema = new mongoose.Schema({
   },
 });
 
-export const Trash = mongoose.model("trashes", trashSchema);
+type TrashSchema = mongoose.InferSchemaType<typeof trashSchema>;
+
+export const Trash =
+  mongoose.models.Trash || mongoose.model<TrashSchema>("Trash", trashSchema);

@@ -23,7 +23,6 @@ const archiveSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.SchemaTypes.ObjectId,
         ref: "Notes",
     },
-    owner: String,
     createdAt: {
         type: Date,
     },
@@ -35,4 +34,5 @@ const archiveSchema = new mongoose_1.default.Schema({
         default: () => new Date(),
     },
 });
-exports.Archive = mongoose_1.default.model("archives", archiveSchema);
+exports.Archive = mongoose_1.default.models.Archive ||
+    mongoose_1.default.model("Archive", archiveSchema);

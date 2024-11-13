@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useState } from "react";
 import { BsMenuButtonWideFill } from "react-icons/bs";
 import { utilStore } from "@/store/util.store";
 import { usePathname } from "next/navigation";

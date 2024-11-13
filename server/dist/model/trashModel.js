@@ -23,7 +23,6 @@ const trashSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.SchemaTypes.ObjectId,
         ref: "Notes",
     },
-    owner: String,
     createdAt: {
         type: Date,
     },
@@ -41,4 +40,4 @@ const trashSchema = new mongoose_1.default.Schema({
         type: Number,
     },
 });
-exports.Trash = mongoose_1.default.model("trashes", trashSchema);
+exports.Trash = mongoose_1.default.models.Trash || mongoose_1.default.model("Trash", trashSchema);

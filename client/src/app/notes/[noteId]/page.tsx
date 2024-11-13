@@ -4,25 +4,26 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Alert from "@/components/ui/ExpiredToken";
 import { useRouter } from "next/navigation";
-import { useMediaQuery } from "usehooks-ts";
 import Image from "next/image";
 import { IoColorFillOutline } from "react-icons/io5";
 import { TbBold, TbItalic } from "react-icons/tb";
 import { LiaListAltSolid, LiaListUlSolid } from "react-icons/lia";
-import keeMeIcon from "../../components/img/keepMe-lightmode.png";
+import keepMeIcon from "../../../assets/images/keepMe-lightmode.png";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuPin, LuPinOff } from "react-icons/lu";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import { editNoteStore } from "@/store/edit.note.store";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
 import { BASE_URL } from "@/utils/baseUrl";
+import { dateFormatter } from "@/utils/dateFormatter.utils";
+import useMobileView from "@/hooks/useMobileView";
 interface Param {
   params: {
     noteId: string;
   };
 }
 function Note({ params }: Param) {
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const { editInfo, openBg, openListStyle } = editNoteStore();
   const {
     setEditInfo,
@@ -81,10 +82,6 @@ function Note({ params }: Param) {
       symbol: "✔",
     },
   ];
-  const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    dateStyle: "full",
-    timeStyle: "short",
-  });
   const axiosIntercept = useAxiosIntercept();
   const [openAlert, setOpenAlert] = useState(false);
   const router = useRouter();
@@ -140,6 +137,7 @@ function Note({ params }: Param) {
       removeDuplicateSymbols(filterSymbols);
     }
     return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editInfo.isListOpen]);
   function puttingListSymbol(e: any) {
     const filterSymbols = typeList.find(
@@ -167,7 +165,7 @@ function Note({ params }: Param) {
       >
         <header className="flex justify-between items-center py-2">
           <div>
-            <Image width={80} src={keeMeIcon} alt="icon" priority />
+            <Image width={80} src={keepMeIcon} alt="app-icon" priority />
           </div>
           <div className="space-x-3 flex">
             <button
@@ -328,7 +326,7 @@ function Note({ params }: Param) {
           <button
             type="button"
             className="w-[30%] py-2 bg-[#101314] text-white rounded-lg"
-            onClick={() => router.push("/notes")}
+            onClick={() => router.back()}
           >
             BACK
           </button>

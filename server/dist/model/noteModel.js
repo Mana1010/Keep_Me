@@ -40,24 +40,7 @@ const noteSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.SchemaTypes.ObjectId,
         ref: "User",
     },
-    owner: {
-        type: String,
-    },
-    noteId: mongoose_1.default.SchemaTypes.ObjectId,
-    createdAt: {
-        type: Date,
-        default: () => new Date(),
-    },
-    updatedAt: {
-        type: Date,
-        default: () => new Date(),
-    },
+}, {
+    timestamps: true,
 });
-// noteSchema.pre("save", function (next) {
-//   if (this.isModified("title") || this.isModified("content")) {
-//     this.updatedAt = new Date();
-//     console.log("Run!");
-//   }
-//   next();
-// });
-exports.Notes = mongoose_1.default.model("notes", noteSchema);
+exports.Notes = mongoose_1.default.models.Notes || mongoose_1.default.model("Note", noteSchema);

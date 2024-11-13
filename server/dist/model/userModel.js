@@ -28,4 +28,4 @@ const userSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true,
 });
-exports.User = mongoose_1.default.model("users", userSchema);
+exports.User = mongoose_1.default.models.User || mongoose_1.default.model("User", userSchema);

@@ -12,12 +12,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LiaTrashAlt, LiaTrashRestoreAltSolid } from "react-icons/lia";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdInfoOutline as CiCircleInfo } from "react-icons/md";
-import { NoteData } from "../notes/page";
-import noResult from "../components/img/no-result-found.png";
+import { NoteData } from "@/types/shared.type";
+import noResult from "../../assets/images/no-result-found.png";
 import Image from "next/image";
 import { utilStore } from "@/store/util.store";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
-import { useMediaQuery } from "usehooks-ts";
 import { BASE_URL } from "@/utils/baseUrl";
 import {
   Popover,
@@ -43,11 +42,12 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import Alert from "@/components/ui/ExpiredToken";
+import useMobileView from "@/hooks/useMobileView";
 interface NoteTrashData extends NoteData {
   createdTrashAt: string;
 }
 function Trash() {
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const { openAlert } = utilStore();
   const axiosIntercept = useAxiosIntercept();
   const queryClient = useQueryClient();

@@ -1,16 +1,20 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import keepMeIcon from "./components/img/keepMe.png";
+import keepMeIcon from "../assets/images/keepMe.png";
 import Link from "next/link";
 import { utilStore } from "@/store/util.store";
 import { useRouter } from "next/navigation";
 import { MdOutlineSecurity, MdPhonelink } from "react-icons/md";
 import { GiToken } from "react-icons/gi";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 export default function Home() {
-  const { setCurrentUser } = utilStore();
   const router = useRouter();
-  const { currentUser } = utilStore();
+  const pathname = usePathname();
+  const { currentUser, setCurrentUser } = utilStore();
+  useEffect(() => {
+    setCurrentUser();
+  }, [pathname, setCurrentUser]);
   return (
     <main className="w-full h-screen overflow-y-auto relative">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center h-full w-full px-4">

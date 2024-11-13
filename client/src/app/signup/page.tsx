@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import signupIcon from "../components/img/signupIcon.png";
+import signupIcon from "../../assets/images/signupIcon.png";
 import Image from "next/image";
 import Link from "next/link";
 import { MdScheduleSend, MdSend } from "react-icons/md";
 import { toast } from "sonner";
-import { useMediaQuery } from "usehooks-ts";
+import useMobileView from "@/hooks/useMobileView";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { BASE_URL } from "@/utils/baseUrl";
@@ -20,7 +20,7 @@ export interface Data {
 }
 function Signup() {
   const router = useRouter();
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const [showPassword, setShowPassword] = useState(false);
   const [showConPassword, setShowConPassword] = useState(false);
   const { register, handleSubmit, reset, formState, watch } = useForm<Data>({

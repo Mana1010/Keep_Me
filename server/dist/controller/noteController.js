@@ -8,15 +8,15 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const noteModel_1 = require("../model/noteModel");
 const trashModel_1 = require("../model/trashModel");
 const archiveModel_1 = require("../model/archiveModel");
+const loggers_utils_1 = require("../utils/loggers.utils");
 exports.addNote = (0, express_async_handler_1.default)(async (req, res) => {
     if (!req.user) {
         res.status(401);
         throw new Error("Unauthorized");
     }
     const { title, content, isBold, isItalic, isFavorite, isListOpen, listType, isPinned, bgColor, } = req.body;
-    console.log(req.body);
     try {
-        const newNote = await noteModel_1.Notes.create({
+        await noteModel_1.Notes.create({
             title,
             content,
             isBold,
@@ -27,10 +27,7 @@ exports.addNote = (0, express_async_handler_1.default)(async (req, res) => {
             isFavorite,
             bgColor,
             createdBy: req.user._id,
-            owner: req.user.username,
         });
-        newNote.noteId = newNote._id;
-        await newNote.save();
         res.status(201).json({ message: "Successfully add your note" });
     }
     catch (err) {
@@ -58,12 +55,13 @@ exports.editNotes = (0, express_async_handler_1.default)(async (req, res) => {
         res.status(401);
         throw new Error("Unauthorized");
     }
-    const editNote = await noteModel_1.Notes.findOne({ noteId: id });
+    const editNote = await noteModel_1.Notes.findById(id);
     if (!editNote) {
         res.status(404);
         throw new Error("Note not found");
     }
     if (title !== editNote.title || content !== editNote.content) {
+        //Will run if the user made a changes to their note
         editNote.updatedAt = new Date();
     }
     editNote.title = title;
@@ -85,7 +83,7 @@ exports.editNotePin = (0, express_async_handler_1.default)(async (req, res) => {
         res.status(401);
         throw new Error("Unauthorized");
     }
-    const editNotePin = await noteModel_1.Notes.findOne({ noteId: id });
+    const editNotePin = await noteModel_1.Notes.findById(id);
     if (!editNotePin) {
         res.status(404);
         throw new Error("Note not found");
@@ -96,6 +94,7 @@ exports.editNotePin = (0, express_async_handler_1.default)(async (req, res) => {
         res.status(200).json({ message: "Note successfully pinned." });
         return;
     }
+    loggers_utils_1.noteLogger.info("Error the note");
     res.status(200).json({ message: "Note successfully unpinned." });
 });
 exports.editNoteFavorite = (0, express_async_handler_1.default)(async (req, res) => {
@@ -126,10 +125,7 @@ exports.getEditNote = (0, express_async_handler_1.default)(async (req, res) => {
         throw new Error("Unauthorized");
     }
     const { id } = req.params;
-    const getNote = await noteModel_1.Notes.findOne({ noteId: id }).select({
-        createdAt: 0,
-        owner: 0,
-    });
+    const getNote = await noteModel_1.Notes.findOne({ noteId: id }).select("-createdAt");
     if (!getNote) {
         res.status(404);
         throw new Error("No note found");
@@ -208,7 +204,7 @@ exports.restoreNote = (0, express_async_handler_1.default)(async (req, res) => {
         throw new Error("Unauthorized");
     }
     const { id } = req.params;
-    const getNote = await trashModel_1.Trash.findOne({ noteId: id }).lean();
+    const getNote = await trashModel_1.Trash.findOne({ noteId: id });
     if (!getNote) {
         res.status(400);
         throw new Error("Note ID not found, please try again");
@@ -238,7 +234,7 @@ exports.deleteTrash = (0, express_async_handler_1.default)(async (req, res) => {
         throw new Error("Unauthorized");
     }
     const { id } = req.params;
-    const getNote = await trashModel_1.Trash.findOne({ noteId: id }).lean();
+    const getNote = await trashModel_1.Trash.findOne({ noteId: id });
     if (!getNote) {
         res.status(400);
         throw new Error("Note ID not found, please try again");

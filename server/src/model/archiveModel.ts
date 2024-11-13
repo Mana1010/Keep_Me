@@ -18,7 +18,6 @@ const archiveSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: "Notes",
   },
-  owner: String,
   createdAt: {
     type: Date,
   },
@@ -31,4 +30,8 @@ const archiveSchema = new mongoose.Schema({
   },
 });
 
-export const Archive = mongoose.model("archives", archiveSchema);
+type ArchiveSchema = mongoose.InferSchemaType<typeof archiveSchema>;
+
+export const Archive =
+  mongoose.models.Archive ||
+  mongoose.model<ArchiveSchema>("Archive", archiveSchema);

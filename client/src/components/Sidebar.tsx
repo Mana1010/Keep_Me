@@ -1,5 +1,5 @@
 "use client";
-import blackIcon from "./img/keepMe-lightmode.png";
+import keepMeIcon from "../assets/images/keepMe-lightmode.png";
 import Image from "next/image";
 import { FaXmark } from "react-icons/fa6";
 import Link from "next/link";
@@ -13,10 +13,11 @@ import { TbArrowsExchange } from "react-icons/tb";
 import { State } from "@/store/util.store";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useMediaQuery } from "usehooks-ts";
-import { NoteData } from "../notes/page";
+import useMobileView from "@/hooks/useMobileView";
+import { NoteData } from "@/types/shared.type";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
+import { BASE_URL } from "@/utils/baseUrl";
 
 function Sidebar() {
   const axiosIntercept = useAxiosIntercept();
@@ -24,7 +25,7 @@ function Sidebar() {
   const pathname = usePathname();
   const { openNavBar, setOpenNavbar, currentUser, logOut } =
     utilStore() as State;
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   async function logOutMe() {
     try {
       logOut();
@@ -49,15 +50,12 @@ function Sidebar() {
   } = useQuery({
     queryKey: ["notes"],
     queryFn: async () => {
-      const response = await axiosIntercept.get(
-        "http://localhost:5000/user/notes",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosIntercept.get(`${BASE_URL}/user/notes`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+        withCredentials: true,
+      });
       return response.data.message;
     },
     enabled: currentUser !== null,
@@ -65,15 +63,12 @@ function Sidebar() {
   const getTrash = useQuery({
     queryKey: ["trashes"],
     queryFn: async () => {
-      const response = await axiosIntercept.get(
-        "http://localhost:5000/user/trashes",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosIntercept.get(`${BASE_URL}/user/trashes`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+        withCredentials: true,
+      });
       return response.data.message;
     },
     enabled: currentUser !== null,
@@ -85,7 +80,7 @@ function Sidebar() {
       } md:left-[0] bg-white/40 backdrop-blur-md z-50`}
     >
       <header className="px-2 flex justify-between items-center pt-2">
-        <Image src={blackIcon} priority width={100} alt="icon" />
+        <Image src={keepMeIcon} width={100} alt="app-logo" priority />
         <button
           className="text-xl text-[#120C18] md:hidden"
           onClick={setOpenNavbar}

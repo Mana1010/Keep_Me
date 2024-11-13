@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { Notes, NotesDocument } from "../model/noteModel";
+import { Notes } from "../model/noteModel";
 import { Trash } from "../model/trashModel";
 import { Archive } from "../model/archiveModel";
+import { noteLogger } from "../utils/loggers.utils";
+
 export const addNote = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
     res.status(401);
@@ -19,9 +21,8 @@ export const addNote = asyncHandler(async (req: Request, res: Response) => {
     isPinned,
     bgColor,
   } = req.body;
-  console.log(req.body);
   try {
-    const newNote = await Notes.create({
+    await Notes.create({
       title,
       content,
       isBold,
@@ -32,10 +33,7 @@ export const addNote = asyncHandler(async (req: Request, res: Response) => {
       isFavorite,
       bgColor,
       createdBy: req.user._id,
-      owner: req.user.username,
     });
-    newNote.noteId = newNote._id;
-    await newNote.save();
     res.status(201).json({ message: "Successfully add your note" });
   } catch (err) {
     res.status(400);
@@ -72,14 +70,16 @@ export const editNotes = asyncHandler(async (req: Request, res: Response) => {
     res.status(401);
     throw new Error("Unauthorized");
   }
-  const editNote = await Notes.findOne({ noteId: id });
+  const editNote = await Notes.findById(id);
   if (!editNote) {
     res.status(404);
     throw new Error("Note not found");
   }
   if (title !== editNote.title || content !== editNote.content) {
+    //Will run if the user made a changes to their note
     editNote.updatedAt = new Date();
   }
+
   editNote.title = title;
   editNote.content = content;
   editNote.isBold = isBold;
@@ -95,21 +95,24 @@ export const editNotes = asyncHandler(async (req: Request, res: Response) => {
 export const editNotePin = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { isPinned } = req.body;
+
   if (!req.user) {
     res.status(401);
     throw new Error("Unauthorized");
   }
-  const editNotePin = await Notes.findOne({ noteId: id });
+  const editNotePin = await Notes.findById(id);
   if (!editNotePin) {
     res.status(404);
     throw new Error("Note not found");
   }
   editNotePin.isPinned = isPinned;
   await editNotePin.save();
+
   if (isPinned) {
     res.status(200).json({ message: "Note successfully pinned." });
     return;
   }
+  noteLogger.info("Error the note");
   res.status(200).json({ message: "Note successfully unpinned." });
 });
 export const editNoteFavorite = asyncHandler(
@@ -142,10 +145,7 @@ export const getEditNote = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Notes.findOne({ noteId: id }).select({
-    createdAt: 0,
-    owner: 0,
-  });
+  const getNote = await Notes.findOne({ noteId: id }).select("-createdAt");
   if (!getNote) {
     res.status(404);
     throw new Error("No note found");
@@ -234,7 +234,7 @@ export const restoreNote = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Trash.findOne({ noteId: id }).lean();
+  const getNote = await Trash.findOne({ noteId: id });
   if (!getNote) {
     res.status(400);
     throw new Error("Note ID not found, please try again");
@@ -264,7 +264,7 @@ export const deleteTrash = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Trash.findOne({ noteId: id }).lean();
+  const getNote = await Trash.findOne({ noteId: id });
   if (!getNote) {
     res.status(400);
     throw new Error("Note ID not found, please try again");

@@ -2,17 +2,17 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import changpasswordIcon from "../components/img/changpasswordIcon.png";
+import changpasswordIcon from "../../assets/images/changpasswordIcon.png";
 import Image from "next/image";
 import { MdOutlinePublishedWithChanges } from "react-icons/md";
 import { toast } from "sonner";
-import { useMediaQuery } from "usehooks-ts";
 import { TbArrowsExchange } from "react-icons/tb";
 import { useMutation } from "@tanstack/react-query";
 import Alert from "@/components/ui/ExpiredToken";
 import useAxiosIntercept from "@/api/useAxiosIntercept";
 import { utilStore } from "@/store/util.store";
 import { BASE_URL } from "@/utils/baseUrl";
+import useMobileView from "@/hooks/useMobileView";
 export interface Data {
   password: string;
   newpassword: string;
@@ -20,7 +20,7 @@ export interface Data {
 }
 function ChangePassword() {
   const axiosIntercept = useAxiosIntercept();
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMobileView();
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConPassword, setShowConPassword] = useState(false);
@@ -39,7 +39,13 @@ function ChangePassword() {
     mutationFn: async (data: Data) => {
       const response = await axiosIntercept.patch(
         `${BASE_URL}/auth/changepassword`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+          withCredentials: true,
+        }
       );
       return response.data.message;
     },
