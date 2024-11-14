@@ -3,7 +3,12 @@ import mongoose, { Model } from "mongoose";
 
 const noteSchema = new mongoose.Schema(
   {
-    title: String,
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    title: { type: String, default: "Untitled Note" },
     content: String,
     isBold: {
       type: Boolean,
@@ -32,10 +37,6 @@ const noteSchema = new mongoose.Schema(
     bgColor: {
       type: String,
       default: "white",
-    },
-    createdBy: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
     },
   },
   {

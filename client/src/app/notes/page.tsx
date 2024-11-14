@@ -27,6 +27,8 @@ function Notes() {
   const [addNote, setAddNote] = useState(false);
   const [searchedNoteTitle, setSearchedNoteTitle] = useState<string>("");
   const { openAlert } = utilStore();
+
+  const queryClient = useQueryClient();
   const allNotes: UseQueryResult<
     NoteData[],
     AxiosError<{ message: string }>
@@ -42,7 +44,6 @@ function Notes() {
       return response.data.message;
     },
   });
-
   if (allNotes.isLoading) {
     return <Loading>Your Notes is Loading...</Loading>;
   }
@@ -50,8 +51,63 @@ function Notes() {
     new RegExp(searchedNoteTitle as string, "i").test(note.title)
   );
   const checkIsPinned = allNotes.data?.some((user) => user.isPinned);
+  const filteredNotenotPinned = allNotes.data
+    ?.filter((user) => !user.isPinned)
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
 
-  const filteredNotenotPinned = allNotes.data?.filter((user) => !user.isPinned);
+  const handlePinAction = (noteId: string) => {
+    queryClient.setQueryData<NoteData[] | undefined>(
+      ["notes"],
+      (cachedNotes) => {
+        if (cachedNotes) {
+          return cachedNotes.map((cachedNote) => {
+            console.log(cachedNote);
+            if (noteId === cachedNote._id) {
+              return { ...cachedNote, isPinned: !cachedNote.isPinned };
+            } else {
+              return cachedNote;
+            }
+          });
+        }
+      }
+    );
+  };
+
+  const handleAddFavoriteAction = (noteId: string) => {
+    queryClient.setQueryData<NoteData[] | undefined>(
+      ["notes"],
+      (cachedNotes) => {
+        if (cachedNotes) {
+          return cachedNotes.map((cachedNote) => {
+            if (noteId === cachedNote._id) {
+              return {
+                ...cachedNote,
+                isFavorite: !cachedNote.isFavorite,
+                updatedAt: !cachedNote.isFavorite
+                  ? new Date().toString()
+                  : cachedNote.updatedAt,
+              };
+            }
+            return cachedNote;
+          });
+        }
+      }
+    );
+  };
+
+  const handleTrash = (noteId: string) => {
+    queryClient.setQueryData<NoteData[] | undefined>(
+      ["notes"],
+      (cachedNotes) => {
+        if (cachedNotes) {
+          return cachedNotes.filter((cachedNote) => cachedNote._id !== noteId);
+        }
+      }
+    );
+  };
 
   return (
     <div className="h-screen w-full px-4 py-2 relative">
@@ -109,14 +165,21 @@ function Notes() {
             id="note-with-pin-container"
             className={`${checkIsPinned && "overflow-y-auto"} w-full h-full`}
           >
-            <PinnedNotes
-              checkIsPinned={checkIsPinned as boolean}
-              allNotes={allNotes.data}
-            />
+            {checkIsPinned && (
+              <PinnedNotes
+                allNotes={allNotes.data}
+                handlePinAction={handlePinAction}
+                handleAddFavoriteAction={handleAddFavoriteAction}
+                handleTrash={handleTrash}
+              />
+            )}
             <UnPinnedNotes
               allNotes={allNotes.data}
               checkIsPinned={checkIsPinned as boolean}
               filteredNotenotPinned={filteredNotenotPinned}
+              handlePinAction={handlePinAction}
+              handleAddFavoriteAction={handleAddFavoriteAction}
+              handleTrash={handleTrash}
             />
           </div>
         )}

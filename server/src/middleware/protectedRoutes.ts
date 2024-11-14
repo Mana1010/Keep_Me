@@ -16,7 +16,7 @@ export const protectedRoutes = (
         return res.status(403).json({ message: "Forbidden" });
       } else {
         const jwtPayload = decode as JwtPayload;
-        console.log(`Token ${jwtPayload}`);
+
         req.user = await User.findById(jwtPayload.id).select("-password");
         next();
       }

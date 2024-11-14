@@ -27,21 +27,33 @@ import { dateFormatter } from "@/utils/dateFormatter.utils";
 import useNoteMutation from "@/hooks/useNoteMutation.hook";
 
 interface PinnedNotesSchema {
-  checkIsPinned: boolean;
   allNotes: NoteData[] | undefined;
+  handlePinAction: (noteId: string) => void;
+  handleAddFavoriteAction: (noteId: string) => void;
+  handleTrash: (noteId: string) => void;
 }
-function PinnedNotes({ checkIsPinned, allNotes }: PinnedNotesSchema) {
+function PinnedNotes({
+  allNotes,
+  handlePinAction,
+  handleAddFavoriteAction,
+  handleTrash,
+}: PinnedNotesSchema) {
   const { mutateFavoriteNote, mutatePinNote, deleteNote } = useNoteMutation();
-  const filterNotePinned = allNotes?.filter((user) => user.isPinned);
+  const filterNotePinned = allNotes
+    ?.filter((user) => user.isPinned)
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
   const router = useRouter();
   return (
-    <div className={`${!checkIsPinned && "hidden"} py-2 px-2.5`}>
+    <div className={` py-2 px-2.5`}>
       <h6 className="font-semibold text-slate-700 text-[13px]">PINNED</h6>
       <div className="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-3 pt-1 relative">
         {filterNotePinned?.map((filteredNote) => (
           <motion.div
             onClick={() => {
-              router.push(`notes/${filteredNote.noteId}`);
+              router.push(`notes/${filteredNote._id}`);
             }}
             layout
             key={filteredNote._id}
@@ -52,6 +64,7 @@ function PinnedNotes({ checkIsPinned, allNotes }: PinnedNotesSchema) {
               onClick={(e) => {
                 e.stopPropagation();
                 mutatePinNote.mutate(filteredNote);
+                handlePinAction(filteredNote._id);
               }}
               className="absolute w-6 h-6 rounded-full bg-black text-white md:flex justify-center items-center right-[-10px] top-[-7px] hidden"
             >
@@ -95,13 +108,17 @@ function PinnedNotes({ checkIsPinned, allNotes }: PinnedNotesSchema) {
                   }`}
                   onClick={() => {
                     mutateFavoriteNote.mutate(filteredNote);
+                    handleAddFavoriteAction(filteredNote._id);
                   }}
                 >
                   {filteredNote.isFavorite ? <IoMdHeart /> : <FiHeart />}
                 </button>
                 <button
                   className="hidden md:inline"
-                  onClick={() => deleteNote.mutate(filteredNote)}
+                  onClick={() => {
+                    deleteNote.mutate(filteredNote);
+                    handleTrash(filteredNote._id);
+                  }}
                 >
                   <FiTrash2 />
                 </button>
@@ -136,7 +153,10 @@ function PinnedNotes({ checkIsPinned, allNotes }: PinnedNotesSchema) {
                     <MenubarContent className="bg-black text-white rounded-md divide-y-[1px] divide-[#27272A]">
                       <MenubarItem
                         className="cursor-pointer font-primary p-2 flex gap-2"
-                        onClick={() => mutatePinNote.mutate(filteredNote)}
+                        onClick={() => {
+                          mutatePinNote.mutate(filteredNote);
+                          handlePinAction(filteredNote._id);
+                        }}
                       >
                         <span>
                           <MdOutlinePushPin />

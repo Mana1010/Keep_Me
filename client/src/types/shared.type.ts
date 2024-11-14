@@ -5,5 +5,4 @@ export interface NoteData extends UserNote {
   updatedAt: string;
   createdAt: string;
   owner: string;
-  noteId: string;
 }

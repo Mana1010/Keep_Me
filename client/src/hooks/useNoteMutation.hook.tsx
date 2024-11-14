@@ -15,7 +15,7 @@ function useNoteMutation() {
   const mutateFavoriteNote = useMutation({
     mutationFn: async (data: NoteData) => {
       const response = await axiosIntercept.patch(
-        `${BASE_URL}/user/notes/favorite/${data.noteId}`,
+        `${BASE_URL}/user/notes/favorite/${data._id}`,
         { isFavorite: !data.isFavorite },
         {
           headers: {
@@ -27,7 +27,6 @@ function useNoteMutation() {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries();
       toast.success(data.message, {
         position: matches ? "bottom-right" : "top-center",
       });
@@ -42,7 +41,7 @@ function useNoteMutation() {
   const mutatePinNote = useMutation({
     mutationFn: async (data: NoteData) => {
       const response = await axiosIntercept.patch(
-        `${BASE_URL}/user/notes/pin/${data.noteId}`,
+        `${BASE_URL}/user/notes/pin/${data._id}`,
         { isPinned: !data.isPinned },
         {
           headers: {
@@ -54,7 +53,6 @@ function useNoteMutation() {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries();
       toast.success(data.message, {
         position: matches ? "bottom-right" : "top-center",
       });
@@ -69,7 +67,7 @@ function useNoteMutation() {
   const deleteNote = useMutation({
     mutationFn: async (data: NoteData) => {
       const response = await axiosIntercept.delete(
-        `${BASE_URL}/user/notes/${data.noteId}`,
+        `${BASE_URL}/user/notes/${data._id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
@@ -80,13 +78,12 @@ function useNoteMutation() {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries();
       toast.success(data.message, {
         position: matches ? "bottom-right" : "top-center",
       });
     },
-    onError: (error: any) => {
-      toast.error(error.response.data.message, {
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message, {
         position: matches ? "bottom-right" : "top-center",
       });
     },

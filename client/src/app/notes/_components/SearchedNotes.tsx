@@ -64,7 +64,7 @@ function SearchedNotes({
             {searchedNotes?.map((notes: NoteData) => (
               <motion.div
                 onClick={() => {
-                  router.push(`notes/${notes.noteId}`);
+                  router.push(`notes/${notes._id}`);
                 }}
                 layout
                 key={notes._id}

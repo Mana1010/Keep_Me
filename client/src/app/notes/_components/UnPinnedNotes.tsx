@@ -29,26 +29,31 @@ interface UnPinnedNotesSchema {
   allNotes: NoteData[] | undefined;
   checkIsPinned: boolean;
   filteredNotenotPinned: NoteData[] | undefined;
+  handlePinAction: (noteId: string) => void;
+  handleAddFavoriteAction: (noteId: string) => void;
+  handleTrash: (noteId: string) => void;
 }
 function UnPinnedNotes({
   allNotes,
   checkIsPinned,
   filteredNotenotPinned,
+  handlePinAction,
+  handleAddFavoriteAction,
+  handleTrash,
 }: UnPinnedNotesSchema) {
   const { mutateFavoriteNote, mutatePinNote, deleteNote } = useNoteMutation();
   const router = useRouter();
-  const checkisUnpinned = allNotes?.every((user) => user.isPinned);
   return (
     <div
       id="notes"
-      className={`${!checkIsPinned && "overflow-y-auto"} ${
-        checkisUnpinned && "hidden"
+      className={`${
+        !checkIsPinned && "overflow-y-auto"
       } grid w-full h-full grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 `}
     >
       {filteredNotenotPinned?.map((notes: NoteData) => (
         <motion.div
           onClick={() => {
-            router.push(`notes/${notes.noteId}`);
+            router.push(`notes/${notes._id}`);
           }}
           layout
           key={notes._id}
@@ -61,6 +66,7 @@ function UnPinnedNotes({
               onClick={(e) => {
                 e.stopPropagation();
                 mutatePinNote.mutate(notes);
+                handlePinAction(notes._id);
               }}
               className=" text-black md:flex hidden"
             >
@@ -92,13 +98,19 @@ function UnPinnedNotes({
                 className={`hidden md:inline ${
                   notes.isFavorite ? "text-red-500" : "text-black"
                 }`}
-                onClick={() => mutateFavoriteNote.mutate(notes)}
+                onClick={() => {
+                  mutateFavoriteNote.mutate(notes);
+                  handleAddFavoriteAction(notes._id);
+                }}
               >
                 {notes.isFavorite ? <IoMdHeart /> : <FiHeart />}
               </button>
               <button
                 className="hidden md:inline"
-                onClick={() => deleteNote.mutate(notes)}
+                onClick={() => {
+                  deleteNote.mutate(notes);
+                  handleTrash(notes._id);
+                }}
               >
                 <FiTrash2 />
               </button>
@@ -133,7 +145,10 @@ function UnPinnedNotes({
                   <MenubarContent className="bg-black text-white rounded-md divide-y-[1px] divide-[#27272A]">
                     <MenubarItem
                       className="cursor-pointer font-primary p-2 flex gap-2"
-                      onClick={() => mutatePinNote.mutate(notes)}
+                      onClick={() => {
+                        mutatePinNote.mutate(notes);
+                        handlePinAction(notes._id);
+                      }}
                     >
                       <span>
                         <MdOutlinePushPin />
@@ -144,6 +159,7 @@ function UnPinnedNotes({
                       className="cursor-pointer font-primary p-2 flex gap-2"
                       onClick={() => {
                         mutateFavoriteNote.mutate(notes);
+                        handleAddFavoriteAction(notes._id);
                       }}
                     >
                       <span>
@@ -159,7 +175,10 @@ function UnPinnedNotes({
                     </MenubarItem>
                     <MenubarItem
                       className="cursor-pointer font-primary p-2 flex gap-2"
-                      onClick={() => deleteNote.mutate(notes)}
+                      onClick={() => {
+                        deleteNote.mutate(notes);
+                        handleTrash(notes._id);
+                      }}
                     >
                       <span>
                         <FiTrash2 />

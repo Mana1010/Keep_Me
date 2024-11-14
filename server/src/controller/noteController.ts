@@ -79,6 +79,7 @@ export const editNotes = asyncHandler(async (req: Request, res: Response) => {
     //Will run if the user made a changes to their note
     editNote.updatedAt = new Date();
   }
+  noteLogger.info(editNote);
 
   editNote.title = title;
   editNote.content = content;
@@ -123,7 +124,7 @@ export const editNoteFavorite = asyncHandler(
       res.status(401);
       throw new Error("Unauthorized");
     }
-    const editNoteFavorite = await Notes.findOne({ noteId: id });
+    const editNoteFavorite = await Notes.findById(id);
     if (!editNoteFavorite) {
       res.status(404);
       throw new Error("Note is not found");
@@ -145,7 +146,7 @@ export const getEditNote = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Notes.findOne({ noteId: id }).select("-createdAt");
+  const getNote = await Notes.findById(id).select("-createdAt");
   if (!getNote) {
     res.status(404);
     throw new Error("No note found");
@@ -159,12 +160,12 @@ export const deleteNote = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Notes.findOne({ noteId: id });
+  const getNote = await Notes.findById(id);
   if (!getNote) {
     res.status(404);
     throw new Error("No note found with the provided ID");
   }
-  await Notes.deleteOne({ noteId: id });
+  await Notes.findByIdAndDelete(id);
   await Trash.create({
     title: getNote.title,
     content: getNote.content,
@@ -239,7 +240,7 @@ export const restoreNote = asyncHandler(async (req: Request, res: Response) => {
     res.status(400);
     throw new Error("Note ID not found, please try again");
   }
-  await Trash.deleteOne({ noteId: id });
+  await Trash.deleteOne({ _id: id });
   await Notes.create({
     title: getNote.title,
     content: getNote.content,
@@ -251,8 +252,6 @@ export const restoreNote = asyncHandler(async (req: Request, res: Response) => {
     isFavorite: getNote.isFavorite,
     bgColor: getNote.bgColor,
     createdBy: getNote.createdBy,
-    noteId: getNote.noteId,
-    owner: getNote.owner,
     createdAt: getNote.createdAt,
     updatedAt: getNote.updatedAt,
   });
@@ -264,12 +263,12 @@ export const deleteTrash = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Unauthorized");
   }
   const { id } = req.params;
-  const getNote = await Trash.findOne({ noteId: id });
+  const getNote = await Trash.findById(id);
   if (!getNote) {
     res.status(400);
     throw new Error("Note ID not found, please try again");
   }
-  await Trash.deleteOne({ noteId: id });
+  await Trash.findByIdAndDelete(id);
   await Archive.create({
     title: getNote.title,
     content: getNote.content,
@@ -281,7 +280,6 @@ export const deleteTrash = asyncHandler(async (req: Request, res: Response) => {
     isFavorite: getNote.isFavorite,
     bgColor: getNote.bgColor,
     createdBy: getNote.createdBy,
-    noteId: getNote.noteId,
     owner: getNote.owner,
     createdAt: getNote.createdAt,
     updatedAt: getNote.updatedAt,
