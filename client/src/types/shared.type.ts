@@ -6,3 +6,7 @@ export interface NoteData extends UserNote {
   createdAt: string;
   owner: string;
 }
+
+export interface NoteTrashData extends NoteData {
+  createdTrashAt: string;
+}

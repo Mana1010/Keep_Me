@@ -3,7 +3,6 @@ import React from "react";
 import { useState } from "react";
 import Alert from "@/components/ui/ExpiredToken";
 import { utilStore } from "@/store/util.store";
-import { CiSearch } from "react-icons/ci";
 import { FaPlus, FaCirclePlus } from "react-icons/fa6";
 import AddNote from "@/components/Notes";
 import {
@@ -22,11 +21,12 @@ import UnPinnedNotes from "./_components/UnPinnedNotes";
 import SearchedNotes from "./_components/SearchedNotes";
 import { AxiosError } from "axios";
 import { NoteData } from "@/types/shared.type";
+import Searchbar from "@/components/Searchbar";
 function Notes() {
   const axiosIntercept = useAxiosIntercept();
   const [addNote, setAddNote] = useState(false);
   const [searchedNoteTitle, setSearchedNoteTitle] = useState<string>("");
-  const { openAlert } = utilStore();
+  const { openAlert, currentUser } = utilStore();
 
   const queryClient = useQueryClient();
   const allNotes: UseQueryResult<
@@ -43,6 +43,7 @@ function Notes() {
       });
       return response.data.message;
     },
+    refetchOnWindowFocus: false,
   });
   if (allNotes.isLoading) {
     return <Loading>Your Notes is Loading...</Loading>;
@@ -122,23 +123,12 @@ function Notes() {
           </div>
         </div>
       </div>
-      <div className="w-full rounded-md h-[45px] flex shadow shadow-black mt-2 gap-2 items-center px-2 relative z-10">
-        <label htmlFor="searchbox-notes" className=" text-xl px-1">
-          {" "}
-          <CiSearch />
-        </label>
-        <input
-          onChange={(e) => {
-            setSearchedNoteTitle((prev) => e.target.value);
-          }}
-          value={searchedNoteTitle as string}
-          autoComplete="off"
-          id="searchbox-notes"
-          type="text"
-          placeholder="Search your Notes"
-          className="outline-none bg-transparent caret-black w-[95%]"
-        />
-      </div>{" "}
+
+      <Searchbar
+        searchedNoteTitle={searchedNoteTitle}
+        setSearchedNote={setSearchedNoteTitle}
+      />
+
       <div
         className={` w-full h-[76%] md:h-[82%] pt-1 ${
           searchedNoteTitle ? "hidden" : "block"
